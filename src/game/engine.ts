@@ -308,10 +308,10 @@ function transitionRoom(state: GameState, dir: Direction) {
   if (!nextId) return;
   state.roomId = nextId;
   state.particles = [];
-  if (dir === "right") state.player.x = 4;
-  if (dir === "left") state.player.x = CANVAS_WIDTH - 20;
-  if (dir === "down") state.player.y = 4;
-  if (dir === "up") state.player.y = CANVAS_HEIGHT - 20;
+  if (dir === "right") state.player.x = 6;
+  if (dir === "left") state.player.x = CANVAS_WIDTH - 22;
+  if (dir === "down") state.player.y = 6;
+  if (dir === "up") state.player.y = CANVAS_HEIGHT - 22;
   state.banner = { text: state.rooms[nextId].name, timer: 2.0 };
 }
 
@@ -358,18 +358,33 @@ export function stepGame(state: GameState, input: InputState, dt: number, playSf
   const nextX = p.x + totalVx * clampedDt;
   if (!isBlockedAt(state, nextX + PLAYER_HITBOX.ox, p.y + PLAYER_HITBOX.oy, PLAYER_HITBOX.w, PLAYER_HITBOX.h)) {
     p.x = nextX;
+  } else if (vx !== 0 && vy === 0) {
+    // Gentle Zelda-style corner nudge along narrow paths
+    for (const nudge of [-4, 4, -7, 7]) {
+      if (!isBlockedAt(state, nextX + PLAYER_HITBOX.ox, p.y + nudge + PLAYER_HITBOX.oy, PLAYER_HITBOX.w, PLAYER_HITBOX.h)) {
+        p.y += Math.sign(nudge) * PLAYER_SPEED * 0.65 * clampedDt;
+        break;
+      }
+    }
   }
   const nextY = p.y + totalVy * clampedDt;
   if (!isBlockedAt(state, p.x + PLAYER_HITBOX.ox, nextY + PLAYER_HITBOX.oy, PLAYER_HITBOX.w, PLAYER_HITBOX.h)) {
     p.y = nextY;
+  } else if (vy !== 0 && vx === 0) {
+    for (const nudge of [-4, 4, -7, 7]) {
+      if (!isBlockedAt(state, p.x + nudge + PLAYER_HITBOX.ox, nextY + PLAYER_HITBOX.oy, PLAYER_HITBOX.w, PLAYER_HITBOX.h)) {
+        p.x += Math.sign(nudge) * PLAYER_SPEED * 0.65 * clampedDt;
+        break;
+      }
+    }
   }
 
   // Room exits
   const room = state.rooms[state.roomId];
-  if (p.x < -2 && room.exits.left) transitionRoom(state, "left");
-  else if (p.x > CANVAS_WIDTH - 14 && room.exits.right) transitionRoom(state, "right");
-  else if (p.y < -2 && room.exits.up) transitionRoom(state, "up");
-  else if (p.y > CANVAS_HEIGHT - 14 && room.exits.down) transitionRoom(state, "down");
+  if (p.x < 2 && room.exits.left) transitionRoom(state, "left");
+  else if (p.x > CANVAS_WIDTH - 18 && room.exits.right) transitionRoom(state, "right");
+  else if (p.y < 2 && room.exits.up) transitionRoom(state, "up");
+  else if (p.y > CANVAS_HEIGHT - 18 && room.exits.down) transitionRoom(state, "down");
   else {
     p.x = Math.max(0, Math.min(CANVAS_WIDTH - 16, p.x));
     p.y = Math.max(0, Math.min(CANVAS_HEIGHT - 16, p.y));
