@@ -1,23 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { GameCanvas } from "@/components/GameCanvas";
 
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "翠星の旅人 リオ — 2Dドット絵アクション冒険" },
+      {
+        name: "description",
+        content:
+          "オリジナル主人公リオと4つのエリアを冒険する2D見下ろし型ドット絵アクションゲーム。",
+      },
+      { property: "og:title", content: "翠星の旅人 リオ" },
+      {
+        property: "og:description",
+        content: "3つの星のかけらを集めて翠光の神殿の番人ゴルダに挑むドット絵冒険ゲーム。",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+  return <GameCanvas />;
 }

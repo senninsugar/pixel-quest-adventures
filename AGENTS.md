@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Architecture
+
+- Keep game simulation logic pure in `src/game/engine.ts` and pixel-art drawing in `src/game/sprites.ts` / `src/game/renderer.ts`, separate from the React HUD and input wrapper in `src/components/GameCanvas.tsx`, so core adventure rules stay directly unit-testable.
